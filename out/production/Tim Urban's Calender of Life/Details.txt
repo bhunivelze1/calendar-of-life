@@ -1,0 +1,5 @@
+#Backlog
+-Add menu with item that enable user to add, edit, and delete profile. [save the profile file in the same place as the source file].
+-Add ability to save current configuration as profile, prompting user for the name.
+-Add ability to take a snapshot and save it with the user's name.
+-Add comparison of the weeks to the lenght of time someone able to achive something.
