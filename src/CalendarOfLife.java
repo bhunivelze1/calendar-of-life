@@ -42,12 +42,12 @@ import javafx.util.Duration;
 
 //TODO: Add calender snapshot function
 //TODO: Add skill mastery or achievement duration for comparison
+//TODO: Make the profile management better
 public class CalendarOfLife extends Application {
     
     CheckMenuItem enableProfile;
     MenuItem manageProfile, saveProfile, exitProgram, aboutProgram;
     
-    ObservableList<Profile> profile;
     ComboBox<String> profilePicker;
     
     DatePicker birthDatePicker;
@@ -98,22 +98,16 @@ public class CalendarOfLife extends Application {
         profileMenu.getItems().addAll(enableProfile, new SeparatorMenuItem(),
                 manageProfile, saveProfile, new SeparatorMenuItem(), exitProgram);
         helpMenu.getItems().add(aboutProgram);
-        
-        profile = FXCollections.observableArrayList();
-        profile.add(new Profile("I Gusti Bagus Ananda", 
-                LocalDate.of(1998, Month.JULY, 18), 50));
-        profile.add(new Profile("Karina Paramitha", 
-                LocalDate.of(2001, Month.APRIL, 5), 80));
-        
+
         profilePicker = new ComboBox<>();
-        profilePicker.setPrefWidth(100);
-        profilePicker.getItems().add(profile.get(0).getName());
+        profilePicker.setMinWidth(300);
+        profilePicker.getItems().addAll(ProfileList.getAllProfileName());
         profilePicker.getSelectionModel().selectedItemProperty().addListener(
                 e -> {
                     try {
-                        Profile selectedProfile = profile.get(profilePicker.getSelectionModel().getSelectedIndex());
+                        Profile selectedProfile = ProfileList.getProfile(
+                                profilePicker.getSelectionModel().getSelectedIndex());
                         birthDatePicker.setValue(selectedProfile.getBirthDate());
-                        expectedAgeField.setText(String.valueOf(selectedProfile.getExpectedAge()));
                     } catch (ArrayIndexOutOfBoundsException exception) {}
                 });
         
@@ -124,7 +118,7 @@ public class CalendarOfLife extends Application {
         submitAndClear.setOnAction(e -> submitAndClearBoxes());
         
         calendarTitle = new Label("The Weeks of Your Life");
-        calendarTitle.setFont(new Font("College Block", 20));
+        calendarTitle.setFont(new Font("College Block", 30));
         
         totalWeeksText = new Text();
         totalWeeksText.setFont(new Font(20));
@@ -136,18 +130,16 @@ public class CalendarOfLife extends Application {
         infoRow = new HBox(20, new VBox(new Label("Total Weeks"), totalWeeksText),
                 new VBox(new Label("Used Weeks"), usedWeeksText),
                 new VBox(new Label("Remaining Weeks"), remainingWeeksText));
-        infoRow.setAlignment(Pos.BOTTOM_RIGHT);
-        infoRow.setVisible(false);
-                
+        infoRow.setAlignment(Pos.CENTER);
+
         HBox inputRow = new HBox(10, new VBox(2, new Label("Profile"), profilePicker),
                 new VBox(2, new Label("Birthdate"), birthDatePicker),
                 new VBox(2, new Label("Expected Age"), expectedAgeField), submitAndClear);
         inputRow.setAlignment(Pos.BOTTOM_LEFT);
-        
-        AnchorPane bottomRow = new AnchorPane(inputRow, infoRow);
+
+        AnchorPane bottomRow = new AnchorPane(inputRow);
         AnchorPane.setLeftAnchor(inputRow, Double.valueOf(0));
-        AnchorPane.setRightAnchor(infoRow, Double.valueOf(25));
-        
+
         display = new FlowPane(2, 2);
         display.prefWidthProperty().bind(primaryStage.widthProperty());
         display.prefHeightProperty().bind(primaryStage.heightProperty());
@@ -159,7 +151,7 @@ public class CalendarOfLife extends Application {
         
         boxes = new ArrayList<>();
         
-        outputColumn = new VBox(2, calendarTitle, scrollPane);
+        outputColumn = new VBox(2, calendarTitle, infoRow, scrollPane);
         outputColumn.setAlignment(Pos.TOP_CENTER);
         outputColumn.setVisible(false);
                 
@@ -206,7 +198,6 @@ public class CalendarOfLife extends Application {
                     totalWeeksText.setText(String.valueOf(totalWeeks));
                     usedWeeksText.setText(String.valueOf(usedWeeks));
                     remainingWeeksText.setText(String.valueOf(remainingWeeks));
-                    infoRow.setVisible(true);
                     submitAndClear.setDisable(false);
                     
                     for (int i = 0; i < display.getChildren().size(); i++) {
@@ -234,7 +225,6 @@ public class CalendarOfLife extends Application {
                 totalWeeksText.setText("");
                 usedWeeksText.setText("");
                 remainingWeeksText.setText("");
-                infoRow.setVisible(false);
 
                 birthDatePicker.setDisable(false);
                 expectedAgeField.setDisable(false);
@@ -248,7 +238,7 @@ public class CalendarOfLife extends Application {
     }
     
     public void openProfileManager() {
-        TableView profileTable = new TableView(profile);
+        TableView profileTable = new TableView(ProfileList.getAllProfile());
         profileTable.setPrefWidth(400);
         TableColumn<Profile, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setPrefWidth(220);

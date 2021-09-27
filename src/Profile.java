@@ -5,12 +5,10 @@ public class Profile {
 
     String name;
     LocalDate birthDate;
-    int expectedAge;
 
-    public Profile(String name, LocalDate birthDate, int expectedAge) {
+    public Profile(String name, LocalDate birthDate) {
         this.name = name;
         this.birthDate = birthDate;
-        this.expectedAge = expectedAge;
     }
     
     public String getName() {
@@ -29,13 +27,8 @@ public class Profile {
         this.birthDate = birthDate;
     }
 
-    public int getExpectedAge() {
-        return expectedAge;
+    @Override
+    public String toString() {
+        return this.name;
     }
-
-    public void setExpectedAge(int expectedAge) {
-        this.expectedAge = expectedAge;
-    }
-    
-    
 }
